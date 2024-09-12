@@ -1,14 +1,22 @@
 import os
-from openai import OpenAI
+from litellm import completion
 import base64
-import json
 import time
 import simpleaudio as sa
 import errno
 from elevenlabs import generate, play, set_api_key, voices
 import argparse
+import dotenv
 
-client = OpenAI()
+dotenv.load_dotenv()
+from dotenv import load_dotenv
+
+# Attempt to load environment variables from .env file
+if not load_dotenv():
+    print("Warning: .env file not found or empty. Using default environment variables.")
+
+# Remove the OpenAI client initialization
+# client = OpenAI()
 
 set_api_key(os.environ.get("ELEVENLABS_API_KEY"))
 
@@ -39,22 +47,7 @@ def play_audio(text):
     play(audio)
 
 
-def generate_new_line(base64_image):
-    return [
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "Describe this image"},
-                {
-                    "type": "image_url",
-                    "image_url": f"data:image/jpeg;base64,{base64_image}",
-                },
-            ],
-        },
-    ]
-
-
-def analyze_image(base64_image, script, mode):
+def analyze_image(base64_image, script, mode, model):
     system_content = """
     You are Sir David Attenborough. Narrate the {mode} as if it is a nature documentary.
     Make it snarky and funny. Don't repeat yourself. Make it short. If you see anything remotely interesting, make a big deal about it!
@@ -64,16 +57,29 @@ def analyze_image(base64_image, script, mode):
         focus="Focus on the person's appearance, posture, and surroundings." if mode == "webcam" else "Focus on the activities, applications, and content visible on the screen."
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4-vision-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": system_content,
-            },
-        ]
-        + script
-        + generate_new_line(base64_image),
+    messages = [
+        {
+            "role": "system",
+            "content": system_content,
+        },
+    ] + script + [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Describe this image"},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    },
+                },
+            ],
+        },
+    ]
+
+    response = completion(
+        model=model,
+        messages=messages,
         max_tokens=500,
     )
     response_text = response.choices[0].message.content
@@ -86,6 +92,7 @@ def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Narrate webcam or screenshot")
     parser.add_argument("--mode", choices=["webcam", "screenshot"], default="webcam", help="Capture mode (default: webcam)")
+    parser.add_argument("--model", default="gpt-4-vision-preview", help="Vision model to use (default: gpt-4-vision-preview)") # gpt-4o, claude-3.5-sonnet, gemini-1.5-pro-latest
     args = parser.parse_args()
 
     while True:
@@ -96,10 +103,10 @@ def main():
         base64_image = encode_image(image_path)
 
         # analyze image
-        print("👀 David is watching...")
-        analysis = analyze_image(base64_image, script=script, mode=args.mode)
+        print(f"👀 Aya is watching using {args.model}...")
+        analysis = analyze_image(base64_image, script=script, mode=args.mode, model=args.model)
 
-        print("🎙️ David says:")
+        print("🎙️ Aya says:")
         print(analysis)
 
         play_audio(analysis)
