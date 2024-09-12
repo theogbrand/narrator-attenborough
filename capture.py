@@ -5,6 +5,7 @@ import numpy as np
 import os
 import argparse
 from mss import mss
+import pyautogui
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Capture webcam or screenshot")
@@ -30,6 +31,23 @@ if args.mode == "webcam":
 # Initialize mss for screenshot mode
 sct = mss()
 
+# Function to get the selected region
+def get_selected_region():
+    print("Please select the region you want to capture.")
+    print("Move your mouse to the top-left corner of the region and press Enter.")
+    input()
+    top_left = pyautogui.position()
+    print("Now move your mouse to the bottom-right corner of the region and press Enter.")
+    input()
+    bottom_right = pyautogui.position()
+    return {"left": top_left.x, "top": top_left.y, 
+            "width": bottom_right.x - top_left.x, "height": bottom_right.y - top_left.y}
+
+# Get the selected region if in screenshot mode
+selected_region = None
+if args.mode == "screenshot":
+    selected_region = get_selected_region()
+
 while True:
     if args.mode == "webcam":
         ret, frame = cap.read()
@@ -39,10 +57,10 @@ while True:
         # Convert the frame to a PIL image
         pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     else:  # screenshot mode
-        # Capture screenshot
-        screenshot = sct.grab(sct.monitors[0])
+        # Capture the selected region
+        screenshot = sct.grab(selected_region)
         # Convert to PIL Image
-        pil_img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
+        pil_img = Image.frombytes("RGB", (screenshot.width, screenshot.height), screenshot.rgb)
 
     # Resize the image
     max_size = 250

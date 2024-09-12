@@ -35,11 +35,12 @@ export ELEVENLABS_VOICE_ID=jB2lPb5DhAX6l1TLkKXy
 
 In on terminal, run the webcam capture:
 ```bash
-python capture.py
+python capture.py --mode screenshot
 ```
 In another terminal, run the narrator:
 
 ```bash
-python narrator.py
+python narrator.py --mode screenshot
 ```
 
+run without flag for webcam mode
