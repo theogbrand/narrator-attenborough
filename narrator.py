@@ -6,6 +6,7 @@ import time
 import simpleaudio as sa
 import errno
 from elevenlabs import generate, play, set_api_key, voices
+import argparse
 
 client = OpenAI()
 
@@ -53,16 +54,22 @@ def generate_new_line(base64_image):
     ]
 
 
-def analyze_image(base64_image, script):
+def analyze_image(base64_image, script, mode):
+    system_content = """
+    You are Sir David Attenborough. Narrate the {mode} as if it is a nature documentary.
+    Make it snarky and funny. Don't repeat yourself. Make it short. If you see anything remotely interesting, make a big deal about it!
+    {focus}
+    """.format(
+        mode="webcam footage of the human" if mode == "webcam" else "screenshot of the human's computer",
+        focus="Focus on the person's appearance, posture, and surroundings." if mode == "webcam" else "Focus on the activities, applications, and content visible on the screen."
+    )
+
     response = client.chat.completions.create(
         model="gpt-4-vision-preview",
         messages=[
             {
                 "role": "system",
-                "content": """
-                You are Sir David Attenborough. Narrate the picture of the human as if it is a nature documentary.
-                Make it snarky and funny. Don't repeat yourself. Make it short. If I do anything remotely interesting, make a big deal about it!
-                """,
+                "content": system_content,
             },
         ]
         + script
@@ -75,6 +82,11 @@ def analyze_image(base64_image, script):
 
 def main():
     script = []
+    
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Narrate webcam or screenshot")
+    parser.add_argument("--mode", choices=["webcam", "screenshot"], default="webcam", help="Capture mode (default: webcam)")
+    args = parser.parse_args()
 
     while True:
         # path to your image
@@ -83,9 +95,9 @@ def main():
         # getting the base64 encoding
         base64_image = encode_image(image_path)
 
-        # analyze posture
+        # analyze image
         print("👀 David is watching...")
-        analysis = analyze_image(base64_image, script=script)
+        analysis = analyze_image(base64_image, script=script, mode=args.mode)
 
         print("🎙️ David says:")
         print(analysis)
