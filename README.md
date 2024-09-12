@@ -28,7 +28,7 @@ export ELEVENLABS_API_KEY=<eleven-token>
 Make a new voice in Eleven and get the voice id of that voice using their [get voices](https://elevenlabs.io/docs/api-reference/voices) API, or by clicking the flask icon next to the voice in the VoiceLab tab.
 
 ```
-export ELEVENLABS_VOICE_ID=<voice-id>
+export ELEVENLABS_VOICE_ID=jB2lPb5DhAX6l1TLkKXy
 ```
 
 ## Run it!
