@@ -40,7 +40,7 @@ python capture.py --mode screenshot
 In another terminal, run the narrator:
 
 ```bash
-python narrator.py --mode screenshot --model claude-3.5
+python narrator.py --mode screenshot --model claude-3-5-sonnet-20240620, gpt-4o, gemini/gemini-1.5-pro
 ```
 
 run without flag for webcam mode
