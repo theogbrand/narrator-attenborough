@@ -49,3 +49,4 @@ Notes:
     * even better, having a conversation with OP internalises knowledge even better (Active Learning)
     * scale this experience, reduce time to most important insight
     * address innate desire to acquire insights
+* shortest path to second order insights
