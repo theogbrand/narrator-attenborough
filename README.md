@@ -18,8 +18,6 @@ source venv/bin/activate
 Then, install the dependencies:
 `pip install -r requirements.txt`
 
-Make a [Replicate](https://replicate.com), [OpenAI](https://beta.openai.com/), and [ElevenLabs](https://elevenlabs.io) account and set your tokens:
-
 ```
 export OPENAI_API_KEY=<token>
 export ELEVENLABS_API_KEY=<eleven-token>
@@ -44,3 +42,10 @@ python narrator.py --mode screenshot --model claude-3-5-sonnet-20240620, gpt-4o,
 ```
 
 run without flag for webcam mode
+
+
+Notes:
+* Feeling when don't quite get it when re-read papers, but when the OP distills a complex paper into super crisp and clear explanations
+    * even better, having a conversation with OP internalises knowledge even better (Active Learning)
+    * scale this experience, reduce time to most important insight
+    * address innate desire to acquire insights
