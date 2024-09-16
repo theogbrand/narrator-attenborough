@@ -7,6 +7,12 @@ import errno
 from elevenlabs import generate, play, set_api_key, voices
 import argparse
 import dotenv
+import tts
+import pygame
+from time import time
+import asyncio
+from pygame import mixer
+
 
 dotenv.load_dotenv()
 from dotenv import load_dotenv
@@ -317,6 +323,10 @@ def main():
 
     message_history = []
     while True:
+        mixer.init()
+        current_time = time()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         user_input = input("\nEnter a message (or 'q' to exit): ")
 
         if user_input.lower() == "q":
@@ -350,10 +360,20 @@ def main():
         output = f"{final_explanation}\n\n{follow_up_question}"
         print("\nResponse:", output)
 
+        current_time = time()
+        tts.get_audio_response(output)
+        audio_time = time() - current_time
+        print(f"Finished generating audio in {audio_time:.2f} seconds.")
+
+        print("Speaking...")
+        sound = mixer.Sound("audio/response.wav")
+        sound.play()
+        pygame.time.wait(int(sound.get_length() * 1000))
+
         message_history.append({"role": "user", "content": user_input})
         message_history.append({"role": "assistant", "content": output})
 
-        # print("\nMessage History:", message_history)
+        print("\nMessage History:", message_history)
 
 
 if __name__ == "__main__":

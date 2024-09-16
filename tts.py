@@ -63,13 +63,13 @@ def get_audio_response(text):
     return
 
 # get_audio_response("Hello, brandon.") 
-if __name__ == "__main__":
-    while True:
-        mixer.init()
-        current_time = time()
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        print("Speaking...")
-        sound = mixer.Sound("audio/response.wav")
-        sound.play()
-        pygame.time.wait(int(sound.get_length() * 1000))
+# if __name__ == "__main__":
+#     while True:
+#         mixer.init()
+#         current_time = time()
+#         loop = asyncio.new_event_loop()
+#         asyncio.set_event_loop(loop)
+#         print("Speaking...")
+#         sound = mixer.Sound("audio/response.wav")
+#         sound.play()
+#         pygame.time.wait(int(sound.get_length() * 1000))
