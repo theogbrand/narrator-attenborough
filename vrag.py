@@ -86,13 +86,14 @@ def encode_image(image_path):
 #     )
 #     response_text = response.choices[0].message.content
 #     return response_text
-
+1
 
 import json
 from prompts import (
-    super_flattened_persona_content_dict,
-    persona_summary,
+    super_flattened_o1_content_dict,
+    o1_summary,
 )
+
 from litellm import completion
 import os
 import dotenv
@@ -107,23 +108,23 @@ def get_relevant_sections(question):
     {question}
     </question>
 
-    Please analyze the content in the super_flattened_persona_content_dict and return the most relevant sections that would be helpful in answering this question. Before answering, explain your reasoning step-by-step in the chain_of_thought key. Respond ONLY in a JSON object with the following structure:
+    Please analyze the content in the super_flattened_o1_content_dict and return the most relevant sections that would be helpful in answering this question. Before answering, explain your reasoning step-by-step in the chain_of_thought key. Respond ONLY in a JSON object with the following structure:
 
     {{
         "relevant_sections": [
             {{
                 "chain_of_thought": "A brief explanation of why this section_key is relevant to answering the question provided above",
-                "section_key": "Key of the relevant section or subsection which corresponds to a value containing text in super_flattened_persona_content_dict."
+                "section_key": "Key of the relevant section or subsection which corresponds to a value containing text in super_flattened_o1_content_dict."
             }},
             ...
         ],
     }}
 
-    Here is the super_flattened_persona_content_dict:
+    Here is the super_flattened_o1_content_dict:
 
-    <super_flattened_persona_content_dict>
-    {json.dumps(super_flattened_persona_content_dict, indent=2)}
-    </super_flattened_persona_content_dict>
+    <super_flattened_o1_content_dict>
+    {json.dumps(super_flattened_o1_content_dict, indent=2)}
+    </super_flattened_o1_content_dict>
     """
     claude_response = generate_llm_response(prompt)
 
@@ -196,7 +197,7 @@ def get_relevant_section_content(retrieved):
     relevant_content = []
     for section_key in flattened_section_keys:
         relevant_content.append(
-            {section_key: super_flattened_persona_content_dict[section_key]}
+            {section_key: super_flattened_o1_content_dict[section_key]}
         )
 
     return relevant_content
@@ -352,7 +353,7 @@ def main():
 
         follow_up_question = (
             synthesize_response_with_summary_and_prompt_question_to_user(
-                user_input, final_explanation, persona_summary, message_history
+                user_input, final_explanation, o1_summary, message_history
             )
         )
 
