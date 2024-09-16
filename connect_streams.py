@@ -134,7 +134,8 @@ async def stream_and_listen(prompt: str):
     await ws.close()
     await client.close()
 
+    return
 
-if __name__ == "__main__":
-    user_prompt = input("Enter your prompt: ")
-    asyncio.run(stream_and_listen(user_prompt))
+# if __name__ == "__main__":
+#     user_prompt = input("Enter your prompt: ")
+#     asyncio.run(stream_and_listen(user_prompt))

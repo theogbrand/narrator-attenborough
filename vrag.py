@@ -12,7 +12,7 @@ import pygame
 from time import time
 import asyncio
 from pygame import mixer
-
+from connect_streams import stream_and_listen
 
 dotenv.load_dotenv()
 from dotenv import load_dotenv
@@ -301,17 +301,19 @@ def synthesize_response_with_summary_and_prompt_question_to_user(
      First, prompt the user to clarify if their question was answered by the explanation. Then, please synthesize all of the above into a single follow up question that will continue the train of thought the user was on to understand the big picture and core takeaways of the summary. Do not mention being provided the summary, explanation, or question. Just respond with the follow up question ONLY.
     """
 
-    response = completion(
-        model="claude-3-5-sonnet-20240620",
-        system="You are an expert teacher who is great at engaging students and prompting them to think more deeply about a concept.",
-        messages=message_history
-        + [
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=1000,
-        temperature=0.0,
-    )
-    return response.choices[0].message.content
+    asyncio.run(stream_and_listen(prompt))
+
+    # response = completion(
+    #     model="claude-3-5-sonnet-20240620",
+    #     system="You are an expert teacher who is great at engaging students and prompting them to think more deeply about a concept.",
+    #     messages=message_history
+    #     + [
+    #         {"role": "user", "content": prompt},
+    #     ],
+    #     max_tokens=1000,
+    #     temperature=0.0,
+    # )
+    # return response.choices[0].message.content
 
 
 def main():
@@ -369,7 +371,7 @@ def main():
         print("Speaking...")
         request_time = time() - current_time
         print(f"Finished generating response in {request_time:.2f} seconds.")
-        tts.stream_audio(output)
+        # tts.stream_audio(output)
         # sound = mixer.Sound("audio/response.wav")
         # sound.play()
         # pygame.time.wait(int(sound.get_length() * 1000))
