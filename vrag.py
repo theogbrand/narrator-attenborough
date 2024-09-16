@@ -84,7 +84,6 @@ def encode_image(image_path):
 
 import json
 from prompts import (
-    persona_content_dict,
     super_flattened_persona_content_dict,
     persona_summary,
 )
@@ -102,23 +101,23 @@ def get_relevant_sections(question):
     {question}
     </question>
 
-    Please analyze the content in the persona_content_dict and return the most relevant sections that would be helpful in answering this question. Before answering, explain your reasoning step-by-step in the chain_of_thought key. Respond ONLY in a JSON object with the following structure:
+    Please analyze the content in the super_flattened_persona_content_dict and return the most relevant sections that would be helpful in answering this question. Before answering, explain your reasoning step-by-step in the chain_of_thought key. Respond ONLY in a JSON object with the following structure:
 
     {{
         "relevant_sections": [
             {{
                 "chain_of_thought": "A brief explanation of why this section_key is relevant to answering the question provided above",
-                "section_key": "Key of the relevant section or subsection which corresponds to a value containing text in persona_content_dict."
+                "section_key": "Key of the relevant section or subsection which corresponds to a value containing text in super_flattened_persona_content_dict."
             }},
             ...
         ],
     }}
 
-    Here is the persona_content_dict:
+    Here is the super_flattened_persona_content_dict:
 
-    <persona_content_dict>
-    {json.dumps(persona_content_dict, indent=2)}
-    </persona_content_dict>
+    <super_flattened_persona_content_dict>
+    {json.dumps(super_flattened_persona_content_dict, indent=2)}
+    </super_flattened_persona_content_dict>
     """
     claude_response = generate_llm_response(prompt)
 
@@ -354,7 +353,7 @@ def main():
         message_history.append({"role": "user", "content": user_input})
         message_history.append({"role": "assistant", "content": output})
 
-        print("\nMessage History:", message_history)
+        # print("\nMessage History:", message_history)
 
 
 if __name__ == "__main__":
