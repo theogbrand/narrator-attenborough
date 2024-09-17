@@ -63,9 +63,9 @@ while True:
         pil_img = Image.frombytes("RGB", (screenshot.width, screenshot.height), screenshot.rgb)
 
     # Resize the image
-    max_size = 250
-    ratio = max_size / max(pil_img.size)
-    new_size = tuple([int(x*ratio) for x in pil_img.size])
+    max_size = 1000
+    ratio = min(max_size / pil_img.width, max_size / pil_img.height)
+    new_size = (int(pil_img.width * ratio), int(pil_img.height * ratio))
     resized_img = pil_img.resize(new_size, Image.LANCZOS)
 
     # Convert the PIL image back to an OpenCV image
