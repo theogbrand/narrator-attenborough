@@ -359,32 +359,32 @@ def main():
         print("JARVIS is speaking the response...")
         final_explanation = simplify_response(response)
 
-        print("JARVIS is speaking the follow up question...")
-        follow_up_question = (
-            synthesize_response_with_summary_and_prompt_question_to_user(
-                user_input, final_explanation, o1_summary, message_history
-            )
-        )
+        # print("JARVIS is speaking the follow up question...")
+        # follow_up_question = (
+        #     synthesize_response_with_summary_and_prompt_question_to_user(
+        #         user_input, final_explanation, o1_summary, message_history
+        #     )
+        # )
 
-        # Concatenate the final explanation and follow-up question
-        output = f"{final_explanation}\n\n{follow_up_question}"
-        print("\nResponse:", output)
+        # # Concatenate the final explanation and follow-up question
+        # output = f"{final_explanation}\n\n{follow_up_question}"
+        # print("\nResponse:", output)
 
         # current_time = time()
         # tts.get_audio_response(output)
         # audio_time = time() - current_time
         # print(f"Finished generating audio in {audio_time:.2f} seconds.")
 
-        print("Speaking...")
-        request_time = time() - current_time
-        print(f"Finished generating response in {request_time:.2f} seconds.")
+        # print("Speaking...")
+        # request_time = time() - current_time
+        # print(f"Finished generating response in {request_time:.2f} seconds.")
         # tts.stream_audio(output)
         # sound = mixer.Sound("audio/response.wav")
         # sound.play()
         # pygame.time.wait(int(sound.get_length() * 1000))
 
-        message_history.append({"role": "user", "content": user_input})
-        message_history.append({"role": "assistant", "content": output})
+        # message_history.append({"role": "user", "content": user_input})
+        # message_history.append({"role": "assistant", "content": output})
 
         # print("\nMessage History:", message_history)
 
