@@ -66,7 +66,7 @@ import pyaudio
 from cartesia import AsyncCartesia
 
 
-async def send_transcripts(ctx, prompt):
+async def send_transcripts(ctx, prompt, system_prompt, message_history: list = []):
     voice_id = "87748186-23bb-4158-a1eb-332911b0b708"
     model_id = "sonic-english"
     output_format = {
@@ -77,8 +77,11 @@ async def send_transcripts(ctx, prompt):
 
     response = completion(
         model="claude-3-5-sonnet-20240620",
-        messages=[{"role": "user", "content": prompt}],
+        system=system_prompt,
+        messages=message_history + [{"role": "user", "content": prompt}],
         stream=True,
+        temperature=0.0,
+        max_tokens=1000,
     )
 
     full_text = ""
@@ -89,12 +92,16 @@ async def send_transcripts(ctx, prompt):
                 full_text += text_chunk
             else:
                 full_text += text_chunk + " "
+            print(text_chunk)
             await ctx.send(
                 model_id=model_id,
                 transcript=text_chunk,
                 voice_id=voice_id,
                 continue_=True,
                 output_format=output_format,
+                _experimental_voice_controls={
+                    "speed": "fastest",
+                },
             )
 
     await ctx.no_more_inputs()
@@ -120,13 +127,17 @@ async def receive_and_play_audio(ctx):
     p.terminate()
 
 
-async def stream_and_listen(prompt: str):
+async def stream_and_listen(
+    prompt: str, system_prompt: str = "", message_history: list = []
+):
     client = AsyncCartesia(api_key=os.environ.get("CARTESIA_API_KEY"))
 
     ws = await client.tts.websocket()
     ctx = ws.context()
 
-    send_task = asyncio.create_task(send_transcripts(ctx, prompt))
+    send_task = asyncio.create_task(
+        send_transcripts(ctx, prompt, system_prompt, message_history)
+    )
     listen_task = asyncio.create_task(receive_and_play_audio(ctx))
 
     await asyncio.gather(send_task, listen_task)
@@ -135,6 +146,7 @@ async def stream_and_listen(prompt: str):
     await client.close()
 
     return
+
 
 # if __name__ == "__main__":
 #     user_prompt = input("Enter your prompt: ")

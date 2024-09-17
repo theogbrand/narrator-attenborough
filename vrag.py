@@ -264,16 +264,20 @@ def simplify_response(llm_output):
 
     Please simplify the response to a more concise and clear format.
     """
-    response = completion(
-        model="claude-3-5-sonnet-20240620",
-        system="You are an expert teacher of explaining complex AI concepts in simple terms. You are given a response from a large language model and you must simplify it to a conversational answer, like how a great teacher like Richard Feynman would explain a complex physics concept to his students. Only respond with the simplified response. REMEMBER, be conversational and engaging, but do not lose the critical scientific details. Explain using the Pyramid Principle when appropriate. Do not use analogies too much. Do not answer in a list format.",
-        messages=[
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=1000,
-        temperature=0.0,
-    )
-    return response.choices[0].message.content
+    system = "You are an expert teacher of explaining complex AI concepts in simple terms. You are given a response from a large language model and you must simplify it to a conversational answer, like how a great teacher like Richard Feynman would explain a complex physics concept to his students. Only respond with the simplified response. REMEMBER, be conversational and engaging, but do not lose the critical scientific details. Explain using the Pyramid Principle when appropriate. Do not use analogies too much. Do not answer in a list format."
+
+    asyncio.run(stream_and_listen(prompt, system))
+
+    # response = completion(
+    #     model="claude-3-5-sonnet-20240620",
+    #     system="You are an expert teacher of explaining complex AI concepts in simple terms. You are given a response from a large language model and you must simplify it to a conversational answer, like how a great teacher like Richard Feynman would explain a complex physics concept to his students. Only respond with the simplified response. REMEMBER, be conversational and engaging, but do not lose the critical scientific details. Explain using the Pyramid Principle when appropriate. Do not use analogies too much. Do not answer in a list format.",
+    #     messages=[
+    #         {"role": "user", "content": prompt},
+    #     ],
+    #     max_tokens=1000,
+    #     temperature=0.0,
+    # )
+    # return response.choices[0].message.content
 
 
 def synthesize_response_with_summary_and_prompt_question_to_user(
@@ -300,8 +304,9 @@ def synthesize_response_with_summary_and_prompt_question_to_user(
 
      First, prompt the user to clarify if their question was answered by the explanation. Then, please synthesize all of the above into a single follow up question that will continue the train of thought the user was on to understand the big picture and core takeaways of the summary. Do not mention being provided the summary, explanation, or question. Just respond with the follow up question ONLY.
     """
+    system = "You are an expert teacher who is great at engaging students and prompting them to think more deeply about a concept."
 
-    asyncio.run(stream_and_listen(prompt))
+    asyncio.run(stream_and_listen(prompt, system, message_history))
 
     # response = completion(
     #     model="claude-3-5-sonnet-20240620",
@@ -351,8 +356,10 @@ def main():
         response = synthesize_response(
             user_input, flattened_section_content, base64_image
         )
+        print("JARVIS is speaking the response...")
         final_explanation = simplify_response(response)
 
+        print("JARVIS is speaking the follow up question...")
         follow_up_question = (
             synthesize_response_with_summary_and_prompt_question_to_user(
                 user_input, final_explanation, o1_summary, message_history
